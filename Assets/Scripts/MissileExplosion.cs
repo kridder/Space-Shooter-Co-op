@@ -6,6 +6,7 @@ public class MissileExplosion : MonoBehaviour
 	public GameObject explosion;
 	public GameObject PlayerExplosion;
 	public float smoothing;
+	[HideInInspector]
 	public float blastRadius;
 
 	private GameController gameController;

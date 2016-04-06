@@ -1,10 +1,16 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\EnemyScripts\MissileController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GameControllerSripts\SecondaryController.cs">
     <Files>
-      <File FileName="Assets\Scripts\EnemyScripts\MissileController.cs" Line="34" Column="81" />
-      <File FileName="Assets\Scripts\EnemyScripts\EvasiveManouverMissile.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\MissileExplosion.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\GameControllerSripts\PowerupController.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\GameControllerSripts\GameController.cs" Line="37" Column="3" />
+      <File FileName="Assets\Scripts\EnemyScripts\MissileController.cs" Line="38" Column="5" />
+      <File FileName="Assets\Scripts\EnemyScripts\EvasiveManouverMissile.cs" Line="10" Column="2" />
+      <File FileName="Assets\Scripts\MissileExplosion.cs" Line="12" Column="40" />
+      <File FileName="Assets\Scripts\PlayerScripts\PlayerController.cs" Line="83" Column="5" />
+      <File FileName="Assets\Scripts\EnemyScripts\DestroyByContact.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\SecondaryScripts\MatchObjectController.cs" Line="25" Column="3" />
+      <File FileName="Assets\Scripts\GameControllerSripts\SecondaryController.cs" Line="45" Column="32" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
