@@ -18,21 +18,46 @@ public class PlayerController : MonoBehaviour
 	public Boundary boundary;
 
 	public GameObject shot;
-	public Transform shotSpawn;
+	public Transform[] shotSpawns;
 	public float fireRate;
 
 	private float nextFire;
 	private float fireRateDown;
+	private float speedDown;
 	private bool fireRatePower;
+	private bool speedUpPower;
+	private float fireDoubleDown;
+	public bool startShield = false;
 
+	private int[] shotSpawn;
 	private GameObject shield;
+
+	void Start ()
+	{
+		rb = GetComponent<Rigidbody>();
+		audioSource = GetComponent<AudioSource>();
+		collider = GetComponent<MeshCollider>();
+		fireRatePower = false;
+		shield = GameObject.FindWithTag("Shield");
+		shotSpawn = new int[]{0};
+
+		if (!startShield) 
+		{
+			shield.SetActive (false);
+		} else 
+		{
+			collider.enabled = false;
+		}
+
+	}
 
 	void Update ()
 	{
-
 		if (Input.GetButton ("Fire1") && Time.time > nextFire) {
 			nextFire = Time.time + fireRate;
-			Instantiate (shot, shotSpawn.position, shotSpawn.rotation);
+			for (int i = 0; i < shotSpawn.Length; i++) { 
+				Instantiate (shot, shotSpawns [shotSpawn [i]].position, shotSpawns [shotSpawn [i]].rotation);
+			}
 			audioSource.Play ();
 		} 
 
@@ -48,22 +73,19 @@ public class PlayerController : MonoBehaviour
 			Debug.Log("o key was pressed");
 		}
 
-	}
-
-	void Start ()
-	{
-		rb = GetComponent<Rigidbody>();
-		audioSource = GetComponent<AudioSource>();
-		collider = GetComponent<MeshCollider>();
-		fireRatePower = false;
-		shield = GameObject.FindWithTag("Shield");
-		//shield.SetActive (false);
-		if (shield.activeSelf)
+		if (Input.GetKeyDown (KeyCode.I)) 
 		{
-			collider.enabled = false;
+			StartCoroutine (FireDouble ());
+			Debug.Log("i key was pressed");
 		}
+
+		if (Input.GetKeyDown (KeyCode.U)) 
+		{
+			StartCoroutine (SpeedPower ());
+			Debug.Log("u key was pressed");
+		}
+
 	}
-		
 
 	// player movement 
 	void FixedUpdate ()
@@ -95,6 +117,10 @@ public class PlayerController : MonoBehaviour
 			StartCoroutine (Firerate ());
 		} else if (index == 2) {
 			Shield ();
+		} else if (index == 3) {
+			StartCoroutine (FireDouble());
+		} else if (index == 4) {
+			StartCoroutine (SpeedPower());
 		}
 	}
 
@@ -120,5 +146,32 @@ public class PlayerController : MonoBehaviour
 			collider.enabled = false;
 		}
 	}
+
+	public IEnumerator FireDouble ()
+	{ 
+		fireDoubleDown = Time.time + 5;
+		if (shotSpawn.Length < 2)
+		{
+			//fireDouble = true;
+			shotSpawn = new int[]{ 1, 2 };
+			yield return new WaitWhile (() => fireDoubleDown > Time.time);
+			//fireDouble = false;
+			shotSpawn = new int[]{0};
+		}
+	}
+
+	public IEnumerator SpeedPower ()
+	{
+		speedDown = Time.time + 5;
+		if (speedUpPower == false)
+		{
+			speedUpPower = true;
+			speed = speed * 1.5f;
+			yield return new WaitWhile (() => speedDown > Time.time);
+			speed = speed / 1.5f;
+			speedUpPower = false;
+		}
+	}
+
 
 }
