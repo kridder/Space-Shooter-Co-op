@@ -10,7 +10,7 @@ public class MissileExplosion : MonoBehaviour
 	public float blastRadius;
 
 	private GameController gameController;
-	private SphereCollider collider;
+	private new SphereCollider collider;
 
 	void Start ()
 	{

@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
 {
 	private Rigidbody rb;
 	private AudioSource audioSource;
-	private MeshCollider collider;
+	private new MeshCollider collider;
 
 	public float speed;
 	public float tilt;
