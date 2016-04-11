@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
 	private Rigidbody rb;
 	private AudioSource audioSource;
 	private new MeshCollider collider;
+//	private new Camera camera;
 
 	public float speed;
 	public float tilt;
@@ -31,14 +32,18 @@ public class PlayerController : MonoBehaviour
 
 	private int[] shotSpawn;
 	private GameObject shield;
+//	private GameObject turret;
 
 	void Start ()
 	{
 		rb = GetComponent<Rigidbody>();
 		audioSource = GetComponent<AudioSource>();
 		collider = GetComponent<MeshCollider>();
+//		camera  = GameObject.FindWithTag("MainCamera").GetComponent <Camera> ();
+
 		fireRatePower = false;
 		shield = GameObject.FindWithTag("Shield");
+//		turret = GameObject.FindWithTag("Turret");
 		shotSpawn = new int[]{0};
 
 		if (!startShield) 
@@ -84,7 +89,6 @@ public class PlayerController : MonoBehaviour
 			StartCoroutine (SpeedPower ());
 			Debug.Log("u key was pressed");
 		}
-
 	}
 
 	// player movement 

@@ -16,6 +16,10 @@ public class SecondaryController : MonoBehaviour {
 	//private GameObject[,] grid = new GameObject[8,12];
 	private GameObject[][] grid = new GameObject[gridX][];
 	private List<GameObject> Match = new List<GameObject>();
+	private List<int> Selected = new List<int>();
+	private GameObject Swap;
+
+
 	private new Camera camera;
 	private Vector3 mouseVector;
 	private int mousePositionX;
@@ -42,10 +46,62 @@ public class SecondaryController : MonoBehaviour {
 
 		if (Input.GetMouseButtonDown(0) && mousePositionX >= 0 && mousePositionX < gridX && mousePositionY >= 0 && mousePositionY < gridY)
 		{
-			Destroy(grid[mousePositionX][mousePositionY]);
-			Debug.Log("Destroy(grid[" + mousePositionX +"]["+ mousePositionY+ "]");
-		}
+			Debug.Log("Selected (grid[" + mousePositionX +"]["+ mousePositionY+ "]");
+			if (Selected.Count == 0)
+			{
+				Selected.Add(mousePositionX);
+				Selected.Add(mousePositionY);
+			} else if (Selected[0] == mousePositionX && (Selected[1] == (mousePositionY - 1) || Selected[1] == (mousePositionY + 1))
+				|| Selected[1] == mousePositionY && (Selected[0] == (mousePositionX - 1) || Selected[0] == (mousePositionX + 1)))
+			{
 
+				Swap = grid[mousePositionX][mousePositionY];
+
+				grid[mousePositionX][mousePositionY] = grid[Selected[0]][Selected[1]];
+				grid[mousePositionX][mousePositionY].GetComponent<MatchObjectController> ().xPos = mousePositionX;
+				grid[mousePositionX][mousePositionY].GetComponent<MatchObjectController> ().yPos = mousePositionY;
+				grid[mousePositionX][mousePositionY].GetComponent<MatchObjectController> ().swap = true;
+
+				grid[Selected[0]][Selected[1]] = Swap;
+				grid[Selected[0]][Selected[1]].GetComponent<MatchObjectController> ().xPos = Selected[0];
+				grid[Selected[0]][Selected[1]].GetComponent<MatchObjectController> ().yPos = Selected[1];
+				grid[Selected[0]][Selected[1]].GetComponent<MatchObjectController> ().swap = true;
+
+				if (checkMatch())
+				{
+					Debug.Log("Matches found.");
+
+					StartCoroutine (checkCycle ());
+
+//					deleteMatches();
+//					StartCoroutine (spawnPowerups ());
+				} else {
+					Debug.Log("No matches found.");
+
+					StartCoroutine (revertSwap(Selected[0], Selected[1], mousePositionX, mousePositionY, Swap));
+
+//					grid[Selected[0]][Selected[1]] = grid[mousePositionX][mousePositionY];
+//					grid[Selected[0]][Selected[1]].GetComponent<MatchObjectController> ().xPos = Selected[0];
+//					grid[Selected[0]][Selected[1]].GetComponent<MatchObjectController> ().yPos = Selected[1];
+//					grid[Selected[0]][Selected[1]].GetComponent<MatchObjectController> ().swap = true;
+//
+//					grid[mousePositionX][mousePositionY] = Swap;
+//					grid[mousePositionX][mousePositionY].GetComponent<MatchObjectController> ().xPos = mousePositionX;
+//					grid[mousePositionX][mousePositionY].GetComponent<MatchObjectController> ().yPos = mousePositionY;
+//					grid[mousePositionX][mousePositionY].GetComponent<MatchObjectController> ().swap = true;
+				}
+
+				Swap = null;
+
+				Selected.Clear();
+				Selected.TrimExcess();
+
+			} else {
+				Selected.Clear();
+				Selected.TrimExcess();
+			}
+		}
+			
 		if (Input.GetKeyDown (KeyCode.X)) 
 		{
 			StartCoroutine (spawnPowerups ());
@@ -73,17 +129,17 @@ public class SecondaryController : MonoBehaviour {
 			deleteMatches();
 		}
 
+		if (Input.GetKeyDown (KeyCode.B)) 
+		{
+			StartCoroutine (checkCycle ());
+		}
+
 		// mouseText.text = "Mouse position: " + Input.mousePosition;
 		mouseText.text = "Mouse position: (" + mousePositionX + ", " + mousePositionY + ")";
 
 		mouseTextWorld.text = "Mouse position: " + camera.ScreenToWorldPoint(Input.mousePosition);
 
 	}
-
-//	void OnMouseUpAsButton()
-//	{
-//		Debug.Log("Button pressed.");
-//	}
 		
 	// Spawn initial playfield
 	IEnumerator InitSpawnPowerups ()
@@ -96,19 +152,12 @@ public class SecondaryController : MonoBehaviour {
 				Vector3 spawnPosition = new Vector3 (i, gridY, 0);
 				Quaternion spawnRotation = Quaternion.identity;
 				GameObject spawned = Instantiate (powerup, spawnPosition, spawnRotation) as GameObject;
+				spawned.GetComponent<MatchObjectController> ().xPos = i;
 				spawned.GetComponent<MatchObjectController> ().yPos = ii;
 				grid[i][ii] = spawned;
 				yield return new WaitForSeconds (0.05f);
 			}
 		}
-
-		/*
-		foreach (GameObject i in grid[0])
-		{
-			Debug.Log (i.tag);
-		}
-		Debug.Log (grid[3][9].tag);
-		*/
 	}
 
 	// Powerup Spawner
@@ -141,31 +190,25 @@ public class SecondaryController : MonoBehaviour {
 					Vector3 spawnPosition = new Vector3 (i, gridY, 0);
 					Quaternion spawnRotation = Quaternion.identity;
 					GameObject spawned = Instantiate (powerup, spawnPosition, spawnRotation) as GameObject;
+					spawned.GetComponent<MatchObjectController> ().xPos = i;
 					spawned.GetComponent<MatchObjectController> ().yPos = ii;
 					grid[i][ii] = spawned;
 					yield return new WaitForSeconds (0.05f);
 				}
 			}
 		}
-
-//		foreach (GameObject i in grid[0])
-//		{
-//			Debug.Log (i.tag);
-//		}
-//		Debug.Log ("object x.3 y.9"+grid[3][9].tag);
 	}
 
 	// Check for matches
-	void checkMatch()
+	bool checkMatch()
 	{
-		//Debug.Log (grid[0][0].tag);
+		bool ret = false;
 		// Check for horizontal matches
 		for (int i = 0; i < gridY; i++)
 		{
 			for (int ii = 0; ii < gridX; ii++)
 			{
 				//Debug.Log("grid["+i+"]["+ii+"]");
-				//GameObject[] tempMatch = new GameObject[];
 				List<GameObject> tempMatch = new List<GameObject>();
 				tempMatch.Add (grid[ii][i]);
 				int iii;
@@ -181,7 +224,7 @@ public class SecondaryController : MonoBehaviour {
 
 				if (tempMatch.Count >= 3)
 				{
-					// Debug.Log("Match: " + tempMatch);
+					ret = true;
 					Debug.Log("Horizontal match on object y."+i+" x."+ii+"; counted: "+tempMatch.Count+"; of type: "+grid[ii][i].tag);
 					foreach (GameObject x in tempMatch)
 					{
@@ -198,8 +241,6 @@ public class SecondaryController : MonoBehaviour {
 		{
 			for (int ii = 0; ii < gridY; ii++)
 			{
-				//Debug.Log("grid["+i+"]["+ii+"]");
-				//GameObject[] tempMatch = new GameObject[];
 				List<GameObject> tempMatch = new List<GameObject>();
 				tempMatch.Add (grid[i][ii]);
 				int iii;
@@ -215,7 +256,7 @@ public class SecondaryController : MonoBehaviour {
 
 				if (tempMatch.Count >= 3)
 				{
-					// Debug.Log("Match: " + tempMatch);
+					ret = true;
 					Debug.Log("Vertical match on object x."+i+" y."+ii+"; counted: "+tempMatch.Count+"; of type: "+grid[i][ii].tag);
 					foreach (GameObject x in tempMatch)
 					{
@@ -226,6 +267,7 @@ public class SecondaryController : MonoBehaviour {
 				ii = iii - 1;
 			}
 		}
+		return ret;
 	}
 
 	// Delete matches
@@ -237,5 +279,34 @@ public class SecondaryController : MonoBehaviour {
 		}
 		Match.Clear();
 		Match.TrimExcess();
+	}
+
+	IEnumerator checkCycle ()
+	{
+		bool run = true;
+		while (run)
+		{
+			yield return new WaitForSeconds (0.25f);
+			deleteMatches();
+			yield return new WaitForSeconds (0.05f);
+			yield return StartCoroutine (spawnPowerups ());
+			yield return new WaitForSeconds (0.05f);
+			Debug.Log("Finsihed checkCycle");
+			run = checkMatch();
+		}
+	}
+
+	IEnumerator revertSwap(int x, int y, int mousePositionX, int mousePositionY, GameObject Swap)
+	{
+		yield return new WaitForSeconds (0.25f);
+		grid[x][y] = grid[mousePositionX][mousePositionY];
+		grid[x][y].GetComponent<MatchObjectController> ().xPos = x;
+		grid[x][y].GetComponent<MatchObjectController> ().yPos = y;
+		grid[x][y].GetComponent<MatchObjectController> ().swap = true;
+
+		grid[mousePositionX][mousePositionY] = Swap;
+		grid[mousePositionX][mousePositionY].GetComponent<MatchObjectController> ().xPos = mousePositionX;
+		grid[mousePositionX][mousePositionY].GetComponent<MatchObjectController> ().yPos = mousePositionY;
+		grid[mousePositionX][mousePositionY].GetComponent<MatchObjectController> ().swap = true;
 	}
 }
