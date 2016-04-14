@@ -10,6 +10,15 @@ public class SecondaryController : MonoBehaviour {
 	public int ySpawn;
 
 	public GUIText mouseText;
+	public GUIText redScore;
+	public GUIText blueScore;
+	public GUIText yellowScore;
+	public GUIText greenScore;
+
+	public int scoreRed;
+	public int scoreBlue;
+	public int scoreYellow;
+	public int scoreGreen;
 
 	public GameObject[] powerups;
 	private GameObject[][] grid = new GameObject[gridX][];
@@ -19,6 +28,7 @@ public class SecondaryController : MonoBehaviour {
 
 
 	private new Camera camera;
+	private bool initializing = true;
 	private bool mouseActive = false;
 	private Vector3 mouseVector;
 	private int mousePositionX;
@@ -29,6 +39,16 @@ public class SecondaryController : MonoBehaviour {
 		ySpawn = gridY + 1;
 
 		camera  = GameObject.FindWithTag("MainCamera").GetComponent <Camera> ();
+
+		scoreRed = 0;
+		scoreBlue = 0;
+		scoreYellow = 0;
+		scoreGreen = 0;
+
+		redScore.text = "Red Score: " + scoreRed;
+		blueScore.text = "Blue Score: " + scoreBlue;
+		yellowScore.text = "Yellow Score: " + scoreYellow;
+		greenScore.text = "Green Score: " + scoreGreen;
 
 		for (int i = 0; i < grid.Length; i++)
 		{
@@ -196,6 +216,7 @@ public class SecondaryController : MonoBehaviour {
 			run = checkMatch();
 		} // end while
 
+		initializing = false;
 		mouseActive = true;
 	} // end co-routine InitSpawnPowerups
 
@@ -269,6 +290,7 @@ public class SecondaryController : MonoBehaviour {
 					{
 						Match.Add(x);
 					}
+					addScore(tempMatch[0].tag, tempMatch.Count);
 				}
 
 				ii = iii - 1;
@@ -301,6 +323,7 @@ public class SecondaryController : MonoBehaviour {
 					{
 						Match.Add(x);
 					}
+					addScore(tempMatch[0].tag, tempMatch.Count);
 				}
 
 				ii = iii - 1;
@@ -353,4 +376,31 @@ public class SecondaryController : MonoBehaviour {
 
 		mouseActive = true;
 	} // end co-routine revertSwap
+
+	void addScore(string tag, int count)
+	{
+		if (!(initializing))
+		{
+			if (tag == "PowerupFireRate")
+			{
+				scoreRed += 10 * (count -2);
+				redScore.text = "Red Score: " + scoreRed;
+			}
+			else if (tag == "PowerupShield")
+			{
+				scoreBlue += 10 * (count -2);
+				blueScore.text = "Red Score: " + scoreBlue;
+			}
+			else if (tag == "PowerupFireDouble")
+			{
+				scoreYellow += 10 * (count -2);
+				yellowScore.text = "Red Score: " + scoreYellow;
+			}
+			else if (tag == "PowerupSpeed")
+			{
+				scoreGreen += 10 * (count -2);
+				greenScore.text = "Red Score: " + scoreGreen;
+			}
+		}
+	} // end function addScore
 } // end class SecondaryController
