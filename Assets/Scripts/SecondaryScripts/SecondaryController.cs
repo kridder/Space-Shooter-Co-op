@@ -10,7 +10,6 @@ public class SecondaryController : MonoBehaviour {
 	public int ySpawn;
 
 	public GUIText mouseText;
-	public GUIText mouseTextWorld;
 
 	public GameObject[] powerups;
 	private GameObject[][] grid = new GameObject[gridX][];
@@ -118,11 +117,18 @@ public class SecondaryController : MonoBehaviour {
 		{
 			StartCoroutine (checkCycle ());
 		}
-
-		// mouseText.text = "Mouse position: " + Input.mousePosition;
+			
 		mouseText.text = "Mouse position: (" + mousePositionX + ", " + mousePositionY + ")";
 
-		mouseTextWorld.text = "Mouse position: " + camera.ScreenToWorldPoint(Input.mousePosition);
+		// Make mouseText red when mouse inactive for debugging
+		if (mouseActive)
+		{
+			mouseText.color = Color.white;
+		}
+		else
+		{
+			mouseText.color = new Color(1,0,0,1);
+		}
 
 	} // end function Update
 		

@@ -39,13 +39,14 @@ public class MatchObjectController : MonoBehaviour {
 			if (transform.position.x != xPos)
 			{
 				float newPosition = Mathf.MoveTowards (transform.position.x, xPos, Time.deltaTime * smoothing * .5f);
-				transform.position = new Vector3 (newPosition, transform.position.y, 0);
+				transform.position = new Vector3 (newPosition, transform.position.y, transform.position.x - xPos);
 			} else if (transform.position.y != yPos)
 			{
 				float newPosition = Mathf.MoveTowards (transform.position.y, yPos, Time.deltaTime * smoothing * .5f);
-				transform.position = new Vector3 (transform.position.x, newPosition, 0);
+				transform.position = new Vector3 (transform.position.x, newPosition,transform.position.y -  yPos);
 			} else
 			{
+				transform.position = new Vector3 (transform.position.x, transform.position.y, 0);
 				swap = false;
 			}
 		}
