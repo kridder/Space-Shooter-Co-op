@@ -389,17 +389,17 @@ public class SecondaryController : MonoBehaviour {
 			else if (tag == "PowerupShield")
 			{
 				scoreBlue += 10 * (count -2);
-				blueScore.text = "Red Score: " + scoreBlue;
+				blueScore.text = "Blue Score: " + scoreBlue;
 			}
 			else if (tag == "PowerupFireDouble")
 			{
 				scoreYellow += 10 * (count -2);
-				yellowScore.text = "Red Score: " + scoreYellow;
+				yellowScore.text = "Yellow Score: " + scoreYellow;
 			}
 			else if (tag == "PowerupSpeed")
 			{
 				scoreGreen += 10 * (count -2);
-				greenScore.text = "Red Score: " + scoreGreen;
+				greenScore.text = "Green Score: " + scoreGreen;
 			}
 		}
 	} // end function addScore
